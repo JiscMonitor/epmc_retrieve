@@ -1,0 +1,3 @@
+# Edit this file and save as settings.py to configure the application.
+
+ES_INDEX = "http://localhost:9200/doaj/"
