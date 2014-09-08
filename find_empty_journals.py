@@ -4,43 +4,73 @@ import settings, requests, json
 
 def find_empty_journals():
 
-    SEARCH = settings.ES_INDEX + "/_search?pretty"
-    RES_SIZE = 1000
+    J_SEARCH = settings.ES_INDEX + "/journal/_search"
 
-    query = \
+    j_query = \
     {
-        'fields' : ['index.issn'],
-        'query' : { 'match_all' : {} },
-        'size' : RES_SIZE
+    "query" : {
+        "term" : {"_type" : "journal"}
+        },
+    "facets" : {
+        "issns" : {
+            "terms" : {
+                "field" : "index.issn.exact"
+                }
+            }
+        }
     }
 
-    res_from = 0
-    keep_looping = True
-    j_issns = []
-    a_issns = []
+    RES_SIZE = get_count(J_SEARCH, j_query)
+    j_query['facets']['issns']['terms']['size'] = RES_SIZE
+    (j_issns, total_j_issns) = query_for_issns(J_SEARCH, j_query)
 
-    while keep_looping:
-        query['from'] = res_from
-        resp = requests.get(SEARCH, data=json.dumps(query))
-        results = resp.json()['hits']['hits']
+    print "Number of journal ISSNs: {0}\t Unique: {1}".format(total_j_issns, len(j_issns))
 
-        if results:
-            for result in results:
-                if result['_type'] == 'article':
-                    a_issns += (result['fields']['index.issn'])
-                elif result['_type'] == 'journal':
-                    j_issns += (result['fields']['index.issn'])
-        else:
-            keep_looping = False
-        res_from += RES_SIZE
+    A_SEARCH = settings.ES_INDEX + "/article/_search"
 
-    journal_issns = set(j_issns)
-    article_issns = set(a_issns)
+    a_query = \
+    {
+    "query" : {
+        "term" : {"_type" : "article"}
+        },
+    "facets" : {
+        "issns" : {
+            "terms" : {
+                "field" : "index.issn.exact"
+                }
+            }
+        }
+    }
 
-    print "Full list of journal ISSNs: {0}\t Set: {1}".format(len(j_issns),len(journal_issns))
-    print "Full list of article ISSNs: {0}\t Set: {1}".format(len(a_issns),len(article_issns))
+    RES_SIZE = get_count(A_SEARCH, a_query)
+    a_query['facets']['issns']['terms']['size'] = RES_SIZE
+    (a_issns, total_a_issns) = query_for_issns(A_SEARCH, a_query)
 
-    diff = journal_issns.difference(article_issns)
-    # print "\nJournals without articles:\n{0}".format(diff)
+    print "Number of article ISSNs: {0}\t Unique: {1}".format(total_a_issns, len(a_issns))
+
+    diff = j_issns.difference(a_issns)
+    print "Journals without articles: {0}".format(len(diff))
 
     return list(diff)
+
+def query_for_issns(url, query):
+    result_set = set()
+
+    resp = requests.get(url, data=json.dumps(query))
+    results = resp.json()['facets']['issns']
+
+    total_issns = results['total']
+
+    if total_issns > 0:
+        for result in results['terms']:
+            result_set.add(result['term'])
+
+    return (result_set, total_issns)
+
+
+def get_count(url, query):
+    resp = requests.get(url, data=json.dumps(query))
+    return resp.json()['facets']['issns']['total']
+
+if __name__ == '__main__':
+    find_empty_journals()
