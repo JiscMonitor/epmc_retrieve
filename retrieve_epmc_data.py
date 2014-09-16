@@ -24,8 +24,8 @@ for j in empty_journals:
     hits = int(xml_tree.find('hitCount').text)
     if hits > 0:
         found_count += 1
-        article_count_list.append(found_count)
-        #print etree.tostring(xml_tree)
+        article_count_list.append(hits)
+        print etree.tostring(xml_tree)
 
     time.sleep(DELAY)
 

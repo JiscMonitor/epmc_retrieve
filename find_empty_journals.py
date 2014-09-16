@@ -9,8 +9,13 @@ def find_empty_journals():
     j_query = \
     {
     "query" : {
-        "term" : {"_type" : "journal"}
-        },
+        "bool" : {
+            "must" : [
+                { "term" : {"_type" : "journal"} },
+                {"match" : {"index.country" : "United Kingdom"} }
+                ]
+        }
+    },
     "facets" : {
         "issns" : {
             "terms" : {
@@ -31,8 +36,13 @@ def find_empty_journals():
     a_query = \
     {
     "query" : {
-        "term" : {"_type" : "article"}
-        },
+        "bool" : {
+            "must" : [
+                { "term" : {"_type" : "article"} },
+                {"match" : {"index.country" : "United Kingdom"} }
+                ]
+        }
+    },
     "facets" : {
         "issns" : {
             "terms" : {
