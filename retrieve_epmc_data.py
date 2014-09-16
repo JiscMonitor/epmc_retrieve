@@ -1,31 +1,31 @@
 # Get missing article data from EPMC
 
 import requests, time
-from lxml import etree
 from find_empty_journals import find_empty_journals
 
 ISSN_SEARCH = 'http://www.ebi.ac.uk/europepmc/webservices/rest/search/query=issn:'
-RESULT_TYPE = '&resulttype=core'
 
-DELAY = 1   # Seconds delay between requests
+RESULT_TYPE = '&resulttype=core'
+FORMAT = '&format=json'
+PAGE = '&page={0}'
+params = RESULT_TYPE + FORMAT + PAGE
+DELAY = 1   # Seconds delay between requests to EPMC
 
 empty_journals = find_empty_journals()
 
 print "\nQuerying Europe PubMed Central...\n"
-
-parser = etree.XMLParser(encoding='utf-8', recover=True, ns_clean=True)
 found_count = 0
 article_count_list = []
 
-for j in empty_journals:
-    resp = requests.get(ISSN_SEARCH + j + RESULT_TYPE)
-    xml_tree = etree.fromstring(resp.text.encode('utf-8'), parser=parser)
+for j in empty_journals[:20]:
+    page_index = 1
+    resp = requests.get(ISSN_SEARCH + j + params.format(page_index))
+    resp_json = resp.json()
 
-    hits = int(xml_tree.find('hitCount').text)
+    hits = resp_json['hitCount']
     if hits > 0:
         found_count += 1
         article_count_list.append(hits)
-        print etree.tostring(xml_tree)
 
     time.sleep(DELAY)
 
