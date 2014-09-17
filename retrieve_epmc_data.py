@@ -31,7 +31,6 @@ def check_epmc(journal_list):
             results = resp_json['resultList']['result']
 
             while results:
-                # Deal with the previous set of results
                 handle_results(results)
 
                 # Get a new set of results, paging 25 at a time
@@ -46,7 +45,8 @@ def check_epmc(journal_list):
     print "{0} Journals found in EPMC, covering a total of {1} articles, with a mean of {2} articles per journal.".format(found_count, sum(article_count_list), sum(article_count_list) / float(found_count))
 
 def handle_results(result_batch):
-    print result_batch[0]['id']
+    for res in result_batch:
+        print res
 
 if __name__ == '__main__':
     print "Checking the index for articles without journals...\n"
@@ -54,3 +54,4 @@ if __name__ == '__main__':
 
     print "\nQuerying Europe PubMed Central...\n"
     check_epmc(empty_journals)
+

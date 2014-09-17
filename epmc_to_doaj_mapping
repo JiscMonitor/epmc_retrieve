@@ -1,0 +1,267 @@
+# Mapping EPMC -> DOAJ #
+
+{
+    "id" : "Generate new ID",
+    "admin" : { # Is this necessary?
+        "in_doaj" : true|false,
+        "publisher_record_id" : "pmid"
+    },
+    "bibjson" : {
+        "title" : "title",
+        "identifier": [
+            {"type" : "doi", "id" : "doi", "url" : "<doi url>"},
+            {"type" : "pissn", "id" : "journalInfo/journal/issn"},
+            {"type" : "eissn", "id" : "journalInfo/journal/essn"}
+        ],
+        "journal" : {  # or we can get these from DOAJ when retrieving the ISSNs?
+            "volume" : "journalInfo/volume",
+            "number" : "journalInfo/issue",
+            "publisher" : "<publisher>",
+            "title" : "<journalInfo/journal/title>"
+            "license" : [ # Get from OAG or fulltext
+                {
+                    "title" : "<name of licence>",
+                    "type" : "<type>",
+                    "url" : "<url>",
+                    "version" : "<version>",
+                    "open_access": true|false,
+                }
+            ],
+            "language" : "language",
+            "country" : "<country of publication>"
+        },
+        "year" : "journalInfo/yearOfPublication",
+        "month" : "journalInfo/monthOfPublication",
+        "start_page" : "pageInfo",
+        "end_page" : "pageInfo",
+        "link" : [ # Copy all from the fullTextUrlList
+            {
+                "url" : "fullTextUrlList/fullTextUrl/url",
+                "type" : "fulltext",
+                "content-type" : "fullTextUrlList/fullTextUrl/documentStyle"
+            }
+        ],
+        "abstract" : "abstractText",
+        "author" : [ # Copy all from authorList
+            {
+                "name" : "authorList/author/firstname + lastname",
+                "email" : "<author email>",
+                "affiliation" : "authorList/author/affiliation"
+            },
+        ],
+        "keywords" : [<list of free text keywords>],
+        "subject" : [
+            {
+                "scheme" : "<subject scheme>",
+                "term" : "<subject term>"
+            }
+        ]
+    },
+    "history" : [
+        {
+            "date" : "<date history record created>",
+            "bibjson" : { <historic bibjson record> }
+        }
+    ]
+    "index" : {  # Generate index using the DOAJ method?
+        "date" : "<date of publication>"
+        "issn" : [<list of all issns that this item pertains to>],
+        "subject" : [<all possible subject keywords>],
+        "schema_subject" : [<all subject keywords with schema prefixes>],
+        "classification" : [<list of classification terms without prefixes>],
+        "language" : [<list of languages of the journal>],
+        "country" : "<country of journal publication>",
+        "license" : [<list of titles of licences>],
+        "publisher" : "<publisher>"
+    },
+    "created_date" : "at save time",
+    "last_modified" : "at save time"
+}
+
+
+# EPMC sample #
+
+"id": "25134478",
+        "source": "MED",
+        "pmid": "25134478",
+        "pmcid": "PMC4108104",
+        "title": "The Role of Human Beta-Defensin-2 in Pseudomonas aeruginosa Pulmonary Infection in Cystic Fibrosis Patients.",
+        "authorString": "Dalcin D, Ulanova M.",
+        "authorList": {
+          "author": [
+            {
+              "fullName": "Dalcin D",
+              "firstName": "Daniel",
+              "lastName": "Dalcin",
+              "initials": "D",
+              "affiliation": "Northern Ontario School of Medicine, Lakehead University, 955 Oliver Rd, Thunder Bay, P7B 5E1, ON, Canada, ddalcin@nosm.ca."
+            },
+            {
+              "fullName": "Ulanova M",
+              "firstName": "Marina",
+              "lastName": "Ulanova",
+              "initials": "M"
+            }
+          ]
+        },
+        "journalInfo": {
+          "issue": "2",
+          "volume": "2",
+          "journalIssueId": 2192402,
+          "dateOfPublication": "2013 Dec",
+          "monthOfPublication": 12,
+          "yearOfPublication": 2013,
+          "journal": {
+            "title": "Infectious diseases and therapy",
+            "medlineAbbreviation": "Infect Dis Ther",
+            "essn": "2193-6382",
+            "issn": "2193-8229",
+            "isoabbreviation": "Infect Dis Ther",
+            "nlmid": "101634499"
+          }
+        },
+        "pageInfo": "159-166",
+        "abstractText": "Cystic fibrosis (CF) is the most common genetic disease affecting the Caucasian population. Chronic Pseudomonas aeruginosa pulmonary infection is the major cause of morbidity and mortality in CF patients. Human beta-defensin-2 (hBD-2) is an inducible pulmonary antimicrobial peptide that exerts bacteriostatic activity in a concentration-dependent manner. The decreased expression and compromised function of hBD-2 contributes to the pathogenesis of P. aeruginosa infection in the CF lung. The purpose of this review is to outline the significance of hBD-2 in P. aeruginosa chronic pulmonary infection in CF patients.",
+        "affiliation": "Northern Ontario School of Medicine, Lakehead University, 955 Oliver Rd, Thunder Bay, P7B 5E1, ON, Canada, ddalcin@nosm.ca.",
+        "language": "eng",
+        "pubModel": "Print-Electronic",
+        "pubTypeList": {
+          "pubType": [
+            "Journal Article"
+          ]
+        },
+        "fullTextUrlList": {
+          "fullTextUrl": [
+            {
+              "availability": "Free",
+              "availabilityCode": "F",
+              "documentStyle": "pdf",
+              "site": "PubMedCentral",
+              "url": "http://www.pubmedcentral.nih.gov/picrender.fcgi?tool=EBI&pubmedid=25134478&action=stream&blobtype=pdf"
+            },
+            {
+              "availability": "Free",
+              "availabilityCode": "F",
+              "documentStyle": "html",
+              "site": "PubMedCentral",
+              "url": "http://www.pubmedcentral.nih.gov/articlerender.fcgi?tool=EBI&pubmedid=25134478"
+            },
+            {
+              "availability": "Open access",
+              "availabilityCode": "OA",
+              "documentStyle": "pdf",
+              "site": "Europe_PMC",
+              "url": "http://europepmc.org/articles/PMC4108104?pdf=render"
+            },
+            {
+              "availability": "Open access",
+              "availabilityCode": "OA",
+              "documentStyle": "html",
+              "site": "Europe_PMC",
+              "url": "http://europepmc.org/articles/PMC4108104"
+            },
+            {
+              "availability": "Subscription required",
+              "availabilityCode": "S",
+              "documentStyle": "doi",
+              "site": "DOI",
+              "url": "http://dx.doi.org/10.1007/s40121-013-0015-5"
+            }
+          ]
+        },
+        "isOpenAccess": "Y",
+        "inEPMC": "Y",
+        "inPMC": "Y",
+        "citedByCount": 0,
+        "hasReferences": "Y",
+        "hasTextMinedTerms": "Y",
+        "hasDbCrossReferences": "N",
+        "hasLabsLinks": "N",
+        "hasTMAccessionNumbers": "N",
+        "dateOfCompletion": 1408402800000,
+        "dateOfCreation": 1408402800000,
+        "dateOfRevision": 1408575600000,
+        "luceneScore": "1210.7699",
+        "doi": "10.1007/s40121-013-0015-5"
+      },
+
+
+# DOAJ template #
+
+{
+    "id" : "<some opaque identifier>",
+    "admin" : {
+        "in_doaj" : true|false,
+        "publisher_record_id" : "<publisher identifier for item>"
+    },
+    "bibjson" : {
+        "title" : "<title of the article>",
+        "identifier": [
+            {"type" : "doi", "id" : "<doi>", "url" : "<doi url>"},
+            {"type" : "pissn", "id" : "<print issn>"},
+            {"type" : "eissn", "id" : "<electronic issn>"}
+        ],
+        "journal" : {
+            "volume" : "journal volume number",
+            "number" : "journal issue number",
+            "publisher" : "<publisher>",
+            "title" : "<journal title (taken from journal record)>"
+            "license" : [
+                {
+                    "title" : "<name of licence>",
+                    "type" : "<type>",
+                    "url" : "<url>",
+                    "version" : "<version>",
+                    "open_access": true|false,
+                }
+            ],
+            "language" : "<language of journal as a whole>",
+            "country" : "<country of publication>"
+        },
+        "year" : "<year of publication>",
+        "month" : "<month of publicaiton>",
+        "start_page" : "<start page>",
+        "end_page" : "<end page>",
+        "link" : [
+            {
+                "url" : "<fulltext url>",
+                "type" : "fulltext",
+                "content-type" : "<content type of resource>"
+            }
+        ],
+        "abstract" : "<the abstract>",
+        "author" : [
+            {
+                "name" : "<author name>",
+                "email" : "<author email>",
+                "affiliation" : "<author affiliation>"
+            },
+        ],
+        "keywords" : [<list of free text keywords>],
+        "subject" : [
+            {
+                "scheme" : "<subject scheme>",
+                "term" : "<subject term>"
+            }
+        ]
+    },
+    "history" : [
+        {
+            "date" : "<date history record created>",
+            "bibjson" : { <historic bibjson record> }
+        }
+    ]
+    "index" : {
+        "date" : "<date of publication>"
+        "issn" : [<list of all issns that this item pertains to>],
+        "subject" : [<all possible subject keywords>],
+        "schema_subject" : [<all subject keywords with schema prefixes>],
+        "classification" : [<list of classification terms without prefixes>],
+        "language" : [<list of languages of the journal>],
+        "country" : "<country of journal publication>",
+        "license" : [<list of titles of licences>],
+        "publisher" : "<publisher>"
+    },
+    "created_date" : "<date created>",
+    "last_modified" : "<date record last modified>"
+}
