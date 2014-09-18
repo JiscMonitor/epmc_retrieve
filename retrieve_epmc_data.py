@@ -15,7 +15,7 @@ def check_epmc(journal_list):
     found_count = 0
     article_count_list = []
 
-    for j in journal_list[:20]:
+    for j in journal_list:
         page_index = 1
 
         resp = requests.get(ISSN_SEARCH + j + params.format(page_index))
@@ -46,12 +46,26 @@ def check_epmc(journal_list):
 
 def handle_results(result_batch):
     for res in result_batch:
-        print res
+        global ids
+        ids.append(res['id'])
+        # Save a doaj-type bibjson object using the result
+        #a_bibjson = {}
+        #a_bibjson['title'] = res['title']
+        #save(a_bibjson)
+        #save(res)
+
+def save(json):
+    print json
 
 if __name__ == '__main__':
+    ids = []
+
     print "Checking the index for articles without journals...\n"
     empty_journals = find_empty_journals()
 
     print "\nQuerying Europe PubMed Central...\n"
     check_epmc(empty_journals)
+
+    print 'ids collected:\t {0}'.format(len(ids))
+    print 'minus duplicates:\t {0}'.format(len(set(ids)))
 

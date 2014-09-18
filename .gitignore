@@ -1,4 +1,5 @@
 .idea/
 *.py[c]
 *~
+*.swp
 settings.py
