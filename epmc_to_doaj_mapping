@@ -17,7 +17,7 @@
             "volume" : "journalInfo/volume",
             "number" : "journalInfo/issue",
             "publisher" : "<publisher>",
-            "title" : "<journalInfo/journal/title>"
+            "title" : "journalInfo/journal/title"
             "license" : [ # Get from OAG or fulltext
                 {
                     "title" : "<name of licence>",
