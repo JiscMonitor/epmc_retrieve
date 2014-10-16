@@ -12,7 +12,11 @@ PAGE = '&page={0}'
 params = RESULT_TYPE + FORMAT + PAGE
 DELAY = 1   # Seconds delay between requests to EPMC
 
-def check_epmc(journal_list):
+ids = []
+failed = []
+
+
+def check_epmc(journal_list, out_list):
     found_count = 0
     article_count_list = []
 
@@ -38,7 +42,7 @@ def check_epmc(journal_list):
             results = resp_json['resultList']['result']
 
             while results:
-                handle_results(results)
+                handle_results(results, out_list)
 
                 # Get a new set of results, paging 25 at a time
                 page_index += 1
@@ -51,7 +55,8 @@ def check_epmc(journal_list):
 
     print "{0} Journals found in EPMC, covering a total of {1} articles, with a mean of {2} articles per journal.".format(found_count, sum(article_count_list), sum(article_count_list) / float(found_count))
 
-def handle_results(result_batch):
+
+def handle_results(result_batch, out_list):
     for res in result_batch:
         # Record ids to count them later
         global ids
@@ -119,27 +124,26 @@ def handle_results(result_batch):
                     affil = None
                 a_bibjson.add_author(name, None, affil)
 
-        save(a_bibjson.bibjson)
+        out_list.append(a_bibjson.bibjson)
 
-def save(json_to_write):
-    json.dump(json_to_write, save_file)
-    save_file.write('\n')
+
+def save(list_of_json, save_file):
+    json.dump(list_of_json, save_file, separators=(', ', ': '))
+
 
 if __name__ == '__main__':
-    ids = []
-    failed = []
 
     print "Checking the index for articles without journals...\n"
     empty_journals = find_empty_journals()
 
-    save_file = open('article_json_sample', 'w')
-
+    article_bibjson_list = []
     print "\nQuerying Europe PubMed Central...\n"
-    check_epmc(empty_journals)
+    check_epmc(empty_journals, article_bibjson_list)
+
+    save_file = open('article_json_sample', 'w')
+    save(article_bibjson_list, save_file)
+    save_file.close()
 
     print 'ids collected:\t {0}'.format(len(ids))
     print 'non-duplicates:\t {0}'.format(len(set(ids)))
     print 'failed issns:\t {0}'.format(len(failed))
-
-    save_file.close()
-
