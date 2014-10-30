@@ -1,6 +1,6 @@
 # Get missing article data from EPMC
 
-import requests, time, json
+import requests, time, json, sys
 from find_empty_journals import find_empty_journals
 from bibjson_models import ArticleBibJSON
 
@@ -19,39 +19,52 @@ failed = []
 def check_epmc(journal_list, out_list):
     found_count = 0
     article_count_list = []
+    start_len_j_list = len(journal_list)
 
-    for j in journal_list:
-        page_index = 1
+    # Catch a keyboard interrupt so we can save our progress through the list
+    try:
+        while journal_list:
+            j = journal_list.pop()
+            current_len_j_list = len(journal_list)
+            page_index = 1
 
-        try:
-            resp = requests.get(ISSN_SEARCH + j + params.format(page_index))
-            resp_json = resp.json()
-        except ValueError:
-            print "Failed to get json for {0}".format(j)
-            global failed
-            failed.append(j)
-            continue
-
-        # Check if we have anything to work with
-        hits = resp_json['hitCount']
-        if hits > 0:
-            found_count += 1
-            article_count_list.append(hits)
-
-            # get the first set of results
-            results = resp_json['resultList']['result']
-
-            while results:
-                handle_results(results, out_list)
-
-                # Get a new set of results, paging 25 at a time
-                page_index += 1
+            try:
                 resp = requests.get(ISSN_SEARCH + j + params.format(page_index))
                 resp_json = resp.json()
-                results = resp_json['resultList']['result']
-                time.sleep(DELAY)
+            except ValueError:
+                print "Failed to get json for {0}".format(j)
+                global failed
+                failed.append(j)
+                continue
 
-        time.sleep(DELAY)
+            # Check if we have anything to work with
+            hits = resp_json['hitCount']
+            if hits > 0:
+                found_count += 1
+                article_count_list.append(hits)
+
+                # get the first set of results
+                results = resp_json['resultList']['result']
+
+                while results:
+                    handle_results(results, out_list)
+
+                    # Get a new set of results, paging 25 at a time
+                    page_index += 1
+                    resp = requests.get(ISSN_SEARCH + j + params.format(page_index))
+                    resp_json = resp.json()
+                    results = resp_json['resultList']['result']
+                    time.sleep(DELAY)
+
+            time.sleep(DELAY)
+            print_progress(start_len_j_list, current_len_j_list)
+
+    except KeyboardInterrupt:
+        print "\nExiting. Un-processed ISSNs have been saved to file for later."
+        progress_file = open('saved_progress', 'w')
+        json.dump(journal_list, progress_file, separators=(', ', ': '))
+        progress_file.close()
+        exit()
 
     print "{0} Journals found in EPMC, covering a total of {1} articles, with a mean of {2} articles per journal.".format(found_count, sum(article_count_list), sum(article_count_list) / float(found_count))
 
@@ -131,6 +144,12 @@ def save(list_of_json, save_file):
     json.dump(list_of_json, save_file, separators=(', ', ': '))
 
 
+def print_progress(total, current):
+    prog_percent = (total - current) / float(total) * 100
+    sys.stdout.write("Progress:\t{:.2f}%\r".format(prog_percent))
+    sys.stdout.flush()
+
+
 if __name__ == '__main__':
 
     print "Checking the index for articles without journals...\n"
@@ -138,7 +157,7 @@ if __name__ == '__main__':
 
     article_bibjson_list = []
     print "\nQuerying Europe PubMed Central...\n"
-    check_epmc(empty_journals, article_bibjson_list)
+    check_epmc(empty_journals[:10], article_bibjson_list)
 
     save_file = open('article_json_sample', 'w')
     save(article_bibjson_list, save_file)
