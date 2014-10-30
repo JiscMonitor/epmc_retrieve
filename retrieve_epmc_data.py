@@ -2,7 +2,7 @@
 
 import requests, time, json
 from find_empty_journals import find_empty_journals
-from models import ArticleBibJSON
+from bibjson_models import ArticleBibJSON
 
 ISSN_SEARCH = 'http://www.ebi.ac.uk/europepmc/webservices/rest/search/query=issn:'
 

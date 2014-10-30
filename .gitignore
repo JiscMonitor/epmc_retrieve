@@ -4,3 +4,4 @@
 *.swp
 settings.py
 article_json_sample
+epmc_retrieve.egg-info/*
